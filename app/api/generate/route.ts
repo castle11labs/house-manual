@@ -1,18 +1,21 @@
 import { renderToBuffer } from "@react-pdf/renderer";
 import { HouseManualPDF } from "@/lib/pdf/HouseManualPDF";
 import type { HouseManualData } from "@/lib/schema";
+import type { ManualMode } from "@/types";
 import React from "react";
 
 export async function POST(request: Request) {
   try {
-    const data: HouseManualData = await request.json();
+    const body = await request.json();
+    const data: HouseManualData = body.data || body;
+    const mode: ManualMode = body.mode || "seller";
 
     if (!data.propertyBasics?.address) {
       return new Response("Address is required", { status: 400 });
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const element = React.createElement(HouseManualPDF, { data }) as any;
+    const element = React.createElement(HouseManualPDF, { data, mode }) as any;
     const buffer = await renderToBuffer(element);
 
     const uint8 = new Uint8Array(buffer);

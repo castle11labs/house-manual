@@ -3,24 +3,29 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ChevronLeft, Download, Loader2, Pencil, CheckCircle2 } from "lucide-react";
-import { loadManualData } from "@/lib/storage";
-import { sections } from "@/lib/sections";
+import { loadManualData, loadMode } from "@/lib/storage";
+import { getSectionsForMode } from "@/lib/sections";
 import { isSectionComplete } from "@/lib/storage";
 import type { HouseManualData, SectionKey } from "@/lib/schema";
+import type { ManualMode } from "@/types";
 import { Button } from "@/components/ui/Button";
 
 export default function ReviewPage() {
   const [data, setData] = useState<HouseManualData | null>(null);
+  const [mode, setMode] = useState<ManualMode>("seller");
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
   useEffect(() => {
     setData(loadManualData());
+    const m = loadMode();
+    if (m) setMode(m);
   }, []);
 
   if (!data) return null;
 
+  const sections = getSectionsForMode(mode);
   const filledSections = sections.filter((s) => isSectionComplete(data, s.id) !== "empty");
 
   const handleGenerate = async () => {
@@ -32,7 +37,7 @@ export default function ReviewPage() {
       const response = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify({ data, mode }),
       });
 
       if (!response.ok) {

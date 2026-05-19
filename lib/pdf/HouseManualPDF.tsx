@@ -7,11 +7,13 @@ import {
   Image,
 } from "@react-pdf/renderer";
 import type { HouseManualData } from "@/lib/schema";
-import { sections as sectionMeta } from "@/lib/sections";
+import type { ManualMode } from "@/types";
+import { getSectionsForMode } from "@/lib/sections";
 import { styles } from "./components/PDFStyles";
 
 interface HouseManualPDFProps {
   data: HouseManualData;
+  mode?: ManualMode;
 }
 
 // ─── Shared Components ───────────────────────────────────────────────
@@ -165,7 +167,8 @@ function hasData(obj: Record<string, unknown> | undefined): boolean {
   });
 }
 
-function getCompletedSections(data: HouseManualData) {
+function getCompletedSections(data: HouseManualData, mode: ManualMode = "seller") {
+  const sectionMeta = getSectionsForMode(mode);
   return sectionMeta.filter((s) => {
     const sectionData = data[s.id];
     return sectionData && hasData(sectionData as Record<string, unknown>);
@@ -174,17 +177,18 @@ function getCompletedSections(data: HouseManualData) {
 
 // ─── Main Document ───────────────────────────────────────────────────
 
-export function HouseManualPDF({ data }: HouseManualPDFProps) {
+export function HouseManualPDF({ data, mode = "seller" }: HouseManualPDFProps) {
   const address = data.propertyBasics?.address || "Property";
   const cityStateZip = data.propertyBasics?.cityStateZip || "";
-  const completedSections = getCompletedSections(data);
+  const completedSections = getCompletedSections(data, mode);
+  const docTitle = mode === "host" ? "Guest Manual" : "House Manual";
 
   return (
     <Document>
       {/* Cover Page — dark background */}
       <Page size="LETTER" style={styles.coverPage}>
         <View style={{ flex: 1, justifyContent: "center", paddingHorizontal: 56 }}>
-          <Text style={styles.coverBadge}>House Manual</Text>
+          <Text style={styles.coverBadge}>{docTitle}</Text>
           <Text style={styles.coverTitle}>{address}</Text>
           <Text style={styles.coverCityState}>{cityStateZip}</Text>
           <View style={styles.coverDivider} />
@@ -763,6 +767,85 @@ function SectionContent({
           <Text style={{ ...styles.paragraph, lineHeight: 1.7, fontSize: 11 }}>
             {d.welcomeLetter}
           </Text>
+        </View>
+      );
+    }
+
+    case "houseRules": {
+      const d = data.houseRules;
+      if (!d) return null;
+      resetRowIndex();
+      return (
+        <View>
+          <KVRow label="Max Guests" value={d.maxGuests} />
+          <KVRow label="Quiet Hours" value={d.quietHoursStart && d.quietHoursEnd ? `${d.quietHoursStart} – ${d.quietHoursEnd}` : d.quietHoursStart} />
+          <KVRow label="Smoking" value={d.smokingPolicy?.replace(/_/g, " ")} />
+          <KVRow label="Pets" value={d.petPolicy?.replace(/_/g, " ")} />
+          <KVRow label="Parties" value={d.partyPolicy?.replace(/_/g, " ")} />
+          {d.parkingInstructions && (
+            <View><SubHeader title="Parking" /><Text style={styles.paragraph}>{d.parkingInstructions}</Text></View>
+          )}
+          {d.additionalRules && d.additionalRules.filter(r => r?.trim()).length > 0 && (
+            <View>
+              <SubHeader title="Additional Rules" />
+              {d.additionalRules.filter(r => r?.trim()).map((rule, i) => (
+                <Bullet key={i} text={rule} />
+              ))}
+            </View>
+          )}
+        </View>
+      );
+    }
+
+    case "checkInOut": {
+      const d = data.checkInOut;
+      if (!d) return null;
+      resetRowIndex();
+      return (
+        <View>
+          <KVRow label="Check-in" value={d.checkInTime} />
+          <KVRow label="Check-out" value={d.checkOutTime} />
+          <KVRow label="Early Check-in" value={d.earlyCheckIn} />
+          <KVRow label="Late Check-out" value={d.lateCheckOut} />
+          <KVRow label="Method" value={d.checkInMethod?.replace(/_/g, " ")} />
+          <KVRow label="Lock Code" value={d.lockboxCode} />
+          <KVRow label="Key Pickup" value={d.keyPickupInstructions} />
+          {d.checkInSteps && (
+            <View><SubHeader title="Check-in Steps" /><Text style={styles.paragraph}>{d.checkInSteps}</Text></View>
+          )}
+          {d.checkOutSteps && (
+            <View><SubHeader title="Check-out Steps" /><Text style={styles.paragraph}>{d.checkOutSteps}</Text></View>
+          )}
+          <KVRow label="Luggage Storage" value={d.luggageStorage} />
+        </View>
+      );
+    }
+
+    case "amenitiesGuide": {
+      const d = data.amenitiesGuide;
+      if (!d) return null;
+      const amenities = [
+        { has: d.hasPool, title: "Pool", detail: d.poolInstructions },
+        { has: d.hasHotTub, title: "Hot Tub", detail: d.hotTubInstructions },
+        { has: d.hasGrill, title: "Grill / BBQ", detail: d.grillInstructions },
+        { has: d.hasFirepit, title: "Fire Pit", detail: d.firepitInstructions },
+        { has: d.hasGameRoom, title: "Game Room", detail: d.gameRoomDetails },
+        { has: d.hasGym, title: "Gym", detail: d.gymDetails },
+        { has: d.hasStreamingServices, title: "Streaming", detail: d.streamingDetails },
+        { has: d.hasBikes, title: "Bikes", detail: d.bikeDetails },
+        { has: d.hasBeachGear, title: "Beach Gear", detail: d.beachGearDetails },
+      ];
+      return (
+        <View>
+          {amenities.filter(a => a.has).map((a) => (
+            <View key={a.title}>
+              <SubHeader title={a.title} />
+              {a.detail && <Text style={styles.paragraph}>{a.detail}</Text>}
+            </View>
+          ))}
+          {d.otherAmenities && (
+            <View><SubHeader title="Other Amenities" /><Text style={styles.paragraph}>{d.otherAmenities}</Text></View>
+          )}
         </View>
       );
     }

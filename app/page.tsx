@@ -26,8 +26,9 @@ import {
   Download,
   Monitor,
 } from "lucide-react";
-import { sections } from "@/lib/sections";
+import { getSectionsForMode } from "@/lib/sections";
 import { FAQAccordion } from "@/components/landing/FAQAccordion";
+import { AudienceTabs } from "@/components/landing/AudienceTabs";
 
 const sectionIcons: Record<string, React.ReactNode> = {
   propertyBasics: <Home className="w-4 h-4" />,
@@ -48,6 +49,9 @@ const sectionIcons: Record<string, React.ReactNode> = {
   quirksTips: <Lightbulb className="w-4 h-4" />,
   documentVault: <FolderOpen className="w-4 h-4" />,
   welcomeLetter: <PenLine className="w-4 h-4" />,
+  houseRules: <FileText className="w-4 h-4" />,
+  checkInOut: <Lock className="w-4 h-4" />,
+  amenitiesGuide: <Heart className="w-4 h-4" />,
 };
 
 export default function LandingPage() {
@@ -61,16 +65,16 @@ export default function LandingPage() {
               Free &middot; No signup &middot; 100% private
             </p>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.08]">
-              Create a house manual
+              The house manual
               <br />
-              <span className="text-accent">for the new owners.</span>
+              <span className="text-accent">they&apos;ll actually read.</span>
             </h1>
             <p className="text-lg text-text-muted max-w-xl leading-relaxed">
-              Document every detail about your home — utilities, shutoffs,
-              appliances, contacts, and quirks — and generate a professional PDF
-              the new owners will actually use.
+              Whether you&apos;re selling your home or hosting guests — document
+              everything about the property and generate a polished PDF in
+              minutes.
             </p>
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 pt-2">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 pt-2">
               <Link
                 href="/builder"
                 className="inline-flex items-center gap-2 px-7 py-3.5 bg-cta text-white font-medium rounded-full hover:bg-cta-hover transition-all duration-200 shadow-sm hover:shadow-md text-base"
@@ -87,6 +91,13 @@ export default function LandingPage() {
               </Link>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* ─── Audience Tabs ────────────────────────────── */}
+      <section className="bg-surface border-b border-border">
+        <div className="max-w-5xl mx-auto px-6 py-12 sm:py-16">
+          <AudienceTabs />
         </div>
       </section>
 
@@ -199,39 +210,56 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ─── All 18 Sections ──────────────────────────── */}
+      {/* ─── All Sections ────────────────────────────── */}
       <section id="sections" className="scroll-mt-16">
         <div className="max-w-5xl mx-auto px-6 py-16 sm:py-20">
           <div className="text-center mb-12">
             <h2 className="text-2xl sm:text-3xl font-bold text-text-primary">
-              18 sections. Every detail covered.
+              Every detail covered.
             </h2>
             <p className="text-text-secondary mt-3 max-w-lg mx-auto">
-              Each section is optional. Fill in what applies to your home and
-              skip the rest.
+              Each section is optional. Fill in what applies and skip the rest.
+              Sections are tailored to your use case.
             </p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {sections.map((section) => (
-              <div
-                key={section.id}
-                className="flex items-start gap-3 bg-surface border border-border rounded-2xl p-4 shadow-sm"
-              >
-                <div className="w-9 h-9 rounded-xl bg-accent/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  {sectionIcons[section.id] || (
-                    <FileText className="w-4 h-4 text-accent" />
-                  )}
-                </div>
-                <div className="min-w-0">
-                  <p className="text-sm font-semibold text-text-primary">
-                    {section.number}. {section.title}
-                  </p>
-                  <p className="text-xs text-text-secondary mt-0.5 leading-relaxed">
-                    {section.description}
-                  </p>
-                </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+            <div>
+              <h3 className="text-xs font-semibold text-text-secondary uppercase tracking-wider mb-4">
+                Selling Your Home — {getSectionsForMode("seller").length} sections
+              </h3>
+              <div className="space-y-2">
+                {getSectionsForMode("seller").map((section) => (
+                  <div key={section.id} className="flex items-start gap-3 bg-surface border border-border rounded-xl p-3">
+                    <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center flex-shrink-0">
+                      {sectionIcons[section.id] || <FileText className="w-3.5 h-3.5 text-accent" />}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium text-text-primary">{section.title}</p>
+                      <p className="text-xs text-text-secondary leading-relaxed">{section.description}</p>
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
+            <div>
+              <h3 className="text-xs font-semibold text-text-secondary uppercase tracking-wider mb-4">
+                Short-Term Rental — {getSectionsForMode("host").length} sections
+              </h3>
+              <div className="space-y-2">
+                {getSectionsForMode("host").map((section) => (
+                  <div key={section.id} className="flex items-start gap-3 bg-surface border border-border rounded-xl p-3">
+                    <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center flex-shrink-0">
+                      {sectionIcons[section.id] || <FileText className="w-3.5 h-3.5 text-accent" />}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium text-text-primary">{section.title}</p>
+                      <p className="text-xs text-text-secondary leading-relaxed">{section.description}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </section>

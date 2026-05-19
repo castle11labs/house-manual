@@ -659,6 +659,184 @@ export function SectionFormRenderer({ sectionId, onSave }: SectionFormRendererPr
         </form>
       );
 
+    case "houseRules":
+      return (
+        <form onSubmit={onSubmit} className="space-y-6">
+          <FormSection title="Guest Policies">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Input label="Max Guests" placeholder="e.g., 8" {...register("maxGuests")} />
+              <Select
+                label="Smoking Policy"
+                {...register("smokingPolicy")}
+                placeholder="Select policy"
+                options={[
+                  { value: "no_smoking", label: "No smoking anywhere" },
+                  { value: "outside_only", label: "Outside only" },
+                  { value: "designated_areas", label: "Designated areas" },
+                ]}
+              />
+              <Select
+                label="Pet Policy"
+                {...register("petPolicy")}
+                placeholder="Select policy"
+                options={[
+                  { value: "no_pets", label: "No pets" },
+                  { value: "pets_allowed", label: "Pets welcome" },
+                  { value: "with_approval", label: "With prior approval" },
+                ]}
+              />
+              <Select
+                label="Party / Event Policy"
+                {...register("partyPolicy")}
+                placeholder="Select policy"
+                options={[
+                  { value: "no_parties", label: "No parties or events" },
+                  { value: "small_gatherings", label: "Small gatherings OK" },
+                  { value: "with_approval", label: "With prior approval" },
+                ]}
+              />
+            </div>
+          </FormSection>
+          <FormSection title="Quiet Hours">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Input label="Quiet Hours Start" placeholder="e.g., 10:00 PM" {...register("quietHoursStart")} />
+              <Input label="Quiet Hours End" placeholder="e.g., 8:00 AM" {...register("quietHoursEnd")} />
+            </div>
+          </FormSection>
+          <FormSection title="Parking">
+            <Textarea
+              label="Parking Instructions"
+              placeholder="Where to park, permits needed, how many vehicles..."
+              {...register("parkingInstructions")}
+            />
+          </FormSection>
+          <FormSection title="Additional Rules">
+            {(() => {
+              const AdditionalRulesField = () => {
+                const { fields, append, remove } = useFieldArray({ control, name: "additionalRules" as never });
+                return (
+                  <div className="space-y-3">
+                    {fields.map((field, index) => (
+                      <div key={field.id} className="flex gap-2">
+                        <input
+                          {...register(`additionalRules.${index}`)}
+                          className="flex-1 px-4 py-2.5 text-sm border border-border rounded-xl bg-surface text-text-primary placeholder:text-text-secondary/50 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition-all duration-200"
+                          placeholder="e.g., No shoes inside please"
+                        />
+                        <button type="button" onClick={() => remove(index)} className="p-2 text-text-secondary hover:text-danger transition-colors cursor-pointer rounded-md hover:bg-danger/5" aria-label="Remove rule">&times;</button>
+                      </div>
+                    ))}
+                    <button type="button" onClick={() => append("")} className="inline-flex items-center gap-1.5 text-sm font-medium text-accent hover:text-accent-hover transition-colors cursor-pointer">+ Add a rule</button>
+                  </div>
+                );
+              };
+              return <AdditionalRulesField />;
+            })()}
+          </FormSection>
+          <SubmitButton saveStatus={saveStatus} />
+        </form>
+      );
+
+    case "checkInOut":
+      return (
+        <form onSubmit={onSubmit} className="space-y-6">
+          <FormSection title="Timing">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Input label="Check-in Time" placeholder="e.g., 3:00 PM" {...register("checkInTime")} />
+              <Input label="Check-out Time" placeholder="e.g., 11:00 AM" {...register("checkOutTime")} />
+              <Input label="Early Check-in" placeholder="Available on request? Extra fee?" {...register("earlyCheckIn")} />
+              <Input label="Late Check-out" placeholder="Available on request? Extra fee?" {...register("lateCheckOut")} />
+            </div>
+          </FormSection>
+          <FormSection title="Arrival Instructions">
+            <Select
+              label="Check-in Method"
+              {...register("checkInMethod")}
+              placeholder="Select method"
+              options={[
+                { value: "lockbox", label: "Lockbox / Key safe" },
+                { value: "smart_lock", label: "Smart lock / Code" },
+                { value: "in_person", label: "In-person handoff" },
+                { value: "front_desk", label: "Front desk / Concierge" },
+                { value: "other", label: "Other" },
+              ]}
+            />
+            {(watchString("checkInMethod") === "lockbox" || watchString("checkInMethod") === "smart_lock") && (
+              <Input label="Lock Code" placeholder="e.g., 1234#" {...register("lockboxCode")} />
+            )}
+            {watchString("checkInMethod") === "in_person" && (
+              <Input label="Key Pickup Instructions" placeholder="Where and when to meet..." {...register("keyPickupInstructions")} />
+            )}
+            <Textarea
+              label="Step-by-Step Check-in Instructions"
+              placeholder="1. Park in the driveway&#10;2. Find the lockbox on the front door&#10;3. Enter code to get key&#10;4. Let yourself in"
+              className="min-h-[120px]"
+              {...register("checkInSteps")}
+            />
+          </FormSection>
+          <FormSection title="Departure Instructions">
+            <Textarea
+              label="Check-out Steps"
+              placeholder="1. Strip beds and start a load of towels&#10;2. Run the dishwasher&#10;3. Take trash out&#10;4. Lock up and return key to lockbox"
+              className="min-h-[120px]"
+              {...register("checkOutSteps")}
+            />
+            <Input label="Luggage Storage" placeholder="Available before/after check-in/out?" {...register("luggageStorage")} />
+          </FormSection>
+          <SubmitButton saveStatus={saveStatus} />
+        </form>
+      );
+
+    case "amenitiesGuide":
+      return (
+        <form onSubmit={onSubmit} className="space-y-6">
+          <FormSection title="Outdoor">
+            <Toggle label="Pool" description="Is there a pool available for guests?" checked={watchBool("hasPool")} onChange={(v) => setValue("hasPool", v)} />
+            {watchBool("hasPool") && (
+              <Textarea label="Pool Instructions" placeholder="Hours, rules, how to heat, cover removal..." {...register("poolInstructions")} />
+            )}
+            <Toggle label="Hot Tub / Spa" checked={watchBool("hasHotTub")} onChange={(v) => setValue("hasHotTub", v)} />
+            {watchBool("hasHotTub") && (
+              <Textarea label="Hot Tub Instructions" placeholder="How to turn on, temperature controls, rules..." {...register("hotTubInstructions")} />
+            )}
+            <Toggle label="Grill / BBQ" checked={watchBool("hasGrill")} onChange={(v) => setValue("hasGrill", v)} />
+            {watchBool("hasGrill") && (
+              <Textarea label="Grill Instructions" placeholder="Propane location, how to start, cleanup..." {...register("grillInstructions")} />
+            )}
+            <Toggle label="Fire Pit" checked={watchBool("hasFirepit")} onChange={(v) => setValue("hasFirepit", v)} />
+            {watchBool("hasFirepit") && (
+              <Textarea label="Fire Pit Instructions" placeholder="Where the wood is, how to start, safety rules..." {...register("firepitInstructions")} />
+            )}
+          </FormSection>
+          <FormSection title="Indoor">
+            <Toggle label="Game Room" checked={watchBool("hasGameRoom")} onChange={(v) => setValue("hasGameRoom", v)} />
+            {watchBool("hasGameRoom") && (
+              <Textarea label="Game Room Details" placeholder="What's available, where things are stored..." {...register("gameRoomDetails")} />
+            )}
+            <Toggle label="Gym / Exercise Equipment" checked={watchBool("hasGym")} onChange={(v) => setValue("hasGym", v)} />
+            {watchBool("hasGym") && (
+              <Textarea label="Gym Details" placeholder="Equipment available, rules..." {...register("gymDetails")} />
+            )}
+            <Toggle label="Streaming Services" description="Netflix, Hulu, etc. already logged in?" checked={watchBool("hasStreamingServices")} onChange={(v) => setValue("hasStreamingServices", v)} />
+            {watchBool("hasStreamingServices") && (
+              <Textarea label="Streaming Details" placeholder="Which services are available, how to access..." {...register("streamingDetails")} />
+            )}
+          </FormSection>
+          <FormSection title="Extras">
+            <Toggle label="Bikes" checked={watchBool("hasBikes")} onChange={(v) => setValue("hasBikes", v)} />
+            {watchBool("hasBikes") && (
+              <Textarea label="Bike Details" placeholder="Location, locks, helmets..." {...register("bikeDetails")} />
+            )}
+            <Toggle label="Beach Gear" checked={watchBool("hasBeachGear")} onChange={(v) => setValue("hasBeachGear", v)} />
+            {watchBool("hasBeachGear") && (
+              <Textarea label="Beach Gear Details" placeholder="Chairs, umbrellas, towels, where stored..." {...register("beachGearDetails")} />
+            )}
+            <Textarea label="Other Amenities" placeholder="Anything else guests should know about..." {...register("otherAmenities")} />
+          </FormSection>
+          <SubmitButton saveStatus={saveStatus} />
+        </form>
+      );
+
     default:
       return <p className="text-text-secondary">Section not found.</p>;
   }

@@ -413,6 +413,54 @@ const welcomeLetterSchema = z.object({
   welcomeLetter: z.string().optional(),
 });
 
+// --- Host-Specific Schemas ---
+
+const houseRulesSchema = z.object({
+  maxGuests: z.string().optional(),
+  quietHoursStart: z.string().optional(),
+  quietHoursEnd: z.string().optional(),
+  smokingPolicy: z.string().optional(),
+  petPolicy: z.string().optional(),
+  partyPolicy: z.string().optional(),
+  parkingInstructions: z.string().optional(),
+  additionalRules: z.array(z.string()).optional(),
+});
+
+const checkInOutSchema = z.object({
+  checkInTime: z.string().optional(),
+  checkOutTime: z.string().optional(),
+  checkInMethod: z.string().optional(),
+  lockboxCode: z.string().optional(),
+  keyPickupInstructions: z.string().optional(),
+  checkInSteps: z.string().optional(),
+  checkOutSteps: z.string().optional(),
+  earlyCheckIn: z.string().optional(),
+  lateCheckOut: z.string().optional(),
+  luggageStorage: z.string().optional(),
+});
+
+const amenitiesGuideSchema = z.object({
+  hasPool: z.boolean().optional(),
+  poolInstructions: z.string().optional(),
+  hasHotTub: z.boolean().optional(),
+  hotTubInstructions: z.string().optional(),
+  hasGrill: z.boolean().optional(),
+  grillInstructions: z.string().optional(),
+  hasFirepit: z.boolean().optional(),
+  firepitInstructions: z.string().optional(),
+  hasGameRoom: z.boolean().optional(),
+  gameRoomDetails: z.string().optional(),
+  hasGym: z.boolean().optional(),
+  gymDetails: z.string().optional(),
+  hasBikes: z.boolean().optional(),
+  bikeDetails: z.string().optional(),
+  hasBeachGear: z.boolean().optional(),
+  beachGearDetails: z.string().optional(),
+  hasStreamingServices: z.boolean().optional(),
+  streamingDetails: z.string().optional(),
+  otherAmenities: z.string().optional(),
+});
+
 // --- Master Schema ---
 
 export const houseManualSchema = z.object({
@@ -435,6 +483,10 @@ export const houseManualSchema = z.object({
   quirksTips: quirksTipsSchema.optional(),
   documentVault: documentVaultSchema.optional(),
   welcomeLetter: welcomeLetterSchema.optional(),
+  // Host-specific
+  houseRules: houseRulesSchema.optional(),
+  checkInOut: checkInOutSchema.optional(),
+  amenitiesGuide: amenitiesGuideSchema.optional(),
 });
 
 export type HouseManualData = z.infer<typeof houseManualSchema>;
@@ -459,6 +511,9 @@ export {
   quirksTipsSchema,
   documentVaultSchema,
   welcomeLetterSchema,
+  houseRulesSchema,
+  checkInOutSchema,
+  amenitiesGuideSchema,
 };
 
 // Export helper schemas

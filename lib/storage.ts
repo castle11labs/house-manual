@@ -1,7 +1,22 @@
 import type { HouseManualData, SectionKey } from "./schema";
+import type { ManualMode } from "@/types";
+import { getSectionsForMode } from "./sections";
 
 const STORAGE_KEY = "houseManualData";
+const MODE_KEY = "houseManualMode";
 const CURRENT_SCHEMA_VERSION = 1;
+
+export function loadMode(): ManualMode | null {
+  if (typeof window === "undefined") return null;
+  const mode = localStorage.getItem(MODE_KEY);
+  if (mode === "seller" || mode === "host") return mode;
+  return null;
+}
+
+export function saveMode(mode: ManualMode): void {
+  if (typeof window === "undefined") return;
+  localStorage.setItem(MODE_KEY, mode);
+}
 
 export function loadManualData(): HouseManualData {
   if (typeof window === "undefined") {
@@ -88,29 +103,9 @@ export function isSectionComplete(
   return "complete";
 }
 
-export function getCompletedSectionCount(data: HouseManualData): number {
-  const sectionKeys: SectionKey[] = [
-    "propertyBasics",
-    "emergencyInfo",
-    "utilities",
-    "shutoffsPanels",
-    "hvac",
-    "waterHeater",
-    "majorAppliances",
-    "exteriorSystems",
-    "securityAccess",
-    "smartHome",
-    "trashRecycling",
-    "maintenanceContacts",
-    "hoaCommunity",
-    "warranties",
-    "localKnowledge",
-    "quirksTips",
-    "documentVault",
-    "welcomeLetter",
-  ];
-
-  return sectionKeys.filter(
-    (key) => isSectionComplete(data, key) === "complete"
+export function getCompletedSectionCount(data: HouseManualData, mode: ManualMode = "seller"): number {
+  const secs = getSectionsForMode(mode);
+  return secs.filter(
+    (s) => isSectionComplete(data, s.id) === "complete"
   ).length;
 }

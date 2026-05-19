@@ -11,3 +11,5 @@ export type {
 } from "@/lib/schema";
 
 export type CompletionState = "empty" | "in-progress" | "complete";
+
+export type ManualMode = "seller" | "host";

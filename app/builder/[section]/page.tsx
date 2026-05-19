@@ -2,8 +2,11 @@
 
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { sections, getSectionBySlug, getNextSection, getPreviousSection } from "@/lib/sections";
+import { getSectionsForMode, getSectionBySlug, getNextSection, getPreviousSection } from "@/lib/sections";
+import { loadMode } from "@/lib/storage";
+import type { ManualMode } from "@/types";
 import { SectionFormRenderer } from "@/components/builder/SectionFormRenderer";
 import { Button } from "@/components/ui/Button";
 
@@ -11,10 +14,17 @@ export default function SectionPage() {
   const params = useParams();
   const router = useRouter();
   const slug = params.section as string;
+  const [mode, setMode] = useState<ManualMode>("seller");
 
-  const section = getSectionBySlug(slug);
-  const previousSection = getPreviousSection(slug);
-  const nextSection = getNextSection(slug);
+  useEffect(() => {
+    const m = loadMode();
+    if (m) setMode(m);
+  }, []);
+
+  const allSections = getSectionsForMode(mode);
+  const section = getSectionBySlug(slug, mode);
+  const previousSection = getPreviousSection(slug, mode);
+  const nextSection = getNextSection(slug, mode);
 
   if (!section) {
     return (
@@ -50,13 +60,13 @@ export default function SectionPage() {
           {/* Step indicator */}
           <div className="flex items-center gap-2 mb-4">
             <span className="text-xs font-medium text-accent">
-              Section {section.number} of {sections.length}
+              Section {section.number} of {allSections.length}
             </span>
             <div className="flex-1 h-1 bg-border rounded-full overflow-hidden max-w-48">
               <div
                 className="h-full bg-accent rounded-full transition-all duration-500"
                 style={{
-                  width: `${(section.number / sections.length) * 100}%`,
+                  width: `${(section.number / allSections.length) * 100}%`,
                 }}
               />
             </div>

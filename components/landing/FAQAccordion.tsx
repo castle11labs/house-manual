@@ -33,8 +33,16 @@ const faqs = [
     a: "Yes. The builder is fully responsive and works on phones and tablets. That said, filling in 18 sections is easier on a laptop or desktop.",
   },
   {
-    q: "How do I share the manual with the new owners?",
-    a: "Generate the PDF, then share it however you'd like — email it, print it, put it on a USB drive, or leave a printed copy in the kitchen drawer. The PDF is yours to distribute.",
+    q: "How do I share the manual?",
+    a: "Generate the PDF, then share it however you'd like — email it, print it, put it on a USB drive, or leave a printed copy in the kitchen drawer. For rentals, many hosts include the PDF link in their Airbnb or VRBO listing.",
+  },
+  {
+    q: "What's the difference between Seller and Host mode?",
+    a: "Seller mode includes sections like warranties, HOA details, and document vault — things a new homeowner needs. Host mode swaps those for check-in/check-out instructions, house rules, and an amenities guide — things a short-term rental guest needs. Shared sections like WiFi, emergency info, and local tips appear in both.",
+  },
+  {
+    q: "Can I use this for my Airbnb or VRBO?",
+    a: "Absolutely. Choose \"Short-Term Rental\" when you start and you'll get sections tailored for guests: check-in instructions, house rules, amenities guide, local recommendations, and more.",
   },
 ];
 
