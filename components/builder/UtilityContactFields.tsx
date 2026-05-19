@@ -7,12 +7,14 @@ interface UtilityContactFieldsProps<T extends FieldValues> {
   register: UseFormRegister<T>;
   prefix: Path<T>;
   title: string;
+  hideAccount?: boolean;
 }
 
 export function UtilityContactFields<T extends FieldValues>({
   register,
   prefix,
   title,
+  hideAccount = false,
 }: UtilityContactFieldsProps<T>) {
   return (
     <div className="space-y-3">
@@ -22,10 +24,12 @@ export function UtilityContactFields<T extends FieldValues>({
           label="Provider"
           {...register(`${prefix}.provider` as Path<T>)}
         />
-        <Input
-          label="Account Number"
-          {...register(`${prefix}.accountNumber` as Path<T>)}
-        />
+        {!hideAccount && (
+          <Input
+            label="Account Number"
+            {...register(`${prefix}.accountNumber` as Path<T>)}
+          />
+        )}
         <Input
           label="Phone"
           {...register(`${prefix}.phone` as Path<T>)}

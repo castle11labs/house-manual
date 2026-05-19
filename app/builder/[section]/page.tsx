@@ -80,7 +80,7 @@ export default function SectionPage() {
           </p>
         </div>
 
-        <SectionFormRenderer sectionId={section.id} onSave={handleSave} />
+        <SectionFormRenderer sectionId={section.id} onSave={handleSave} mode={mode} />
 
         <div className="flex items-center justify-between pt-4 border-t border-border">
           <div>

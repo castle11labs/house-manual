@@ -19,9 +19,10 @@ import { ContactFields } from "./ContactFields";
 interface SectionFormRendererProps {
   sectionId: SectionKey;
   onSave: () => void;
+  mode?: "seller" | "host";
 }
 
-export function SectionFormRenderer({ sectionId, onSave }: SectionFormRendererProps) {
+export function SectionFormRenderer({ sectionId, onSave, mode = "seller" }: SectionFormRendererProps) {
   const data = loadManualData();
   const sectionData = data[sectionId] || {};
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved">("idle");
@@ -70,6 +71,7 @@ export function SectionFormRenderer({ sectionId, onSave }: SectionFormRendererPr
 
   const watchBool = (name: string): boolean => !!watch(name);
   const watchString = (name: string): string | undefined => watch(name) as string | undefined;
+  const isHost = mode === "host";
 
   switch (sectionId) {
     case "propertyBasics":
@@ -95,31 +97,45 @@ export function SectionFormRenderer({ sectionId, onSave }: SectionFormRendererPr
           </FormSection>
           <FormSection title="Property Details">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Input label="Year Built" {...register("yearBuilt")} />
-              <Input label="Square Footage" {...register("squareFootage")} />
-              <Input label="Lot Size" {...register("lotSize")} />
+              {!isHost && <Input label="Year Built" {...register("yearBuilt")} />}
+              {!isHost && <Input label="Square Footage" {...register("squareFootage")} />}
+              {!isHost && <Input label="Lot Size" {...register("lotSize")} />}
               <Input label="Bedrooms" {...register("bedrooms")} />
               <Input label="Bathrooms" {...register("bathrooms")} />
               <Select
                 label="Property Type"
                 {...register("propertyType")}
                 placeholder="Select type"
-                options={[
-                  { value: "single_family", label: "Single Family" },
-                  { value: "condo", label: "Condo" },
-                  { value: "townhouse", label: "Townhouse" },
-                  { value: "multi_family", label: "Multi-Family" },
-                  { value: "other", label: "Other" },
-                ]}
+                options={
+                  isHost
+                    ? [
+                        { value: "house", label: "House" },
+                        { value: "apartment", label: "Apartment" },
+                        { value: "condo", label: "Condo" },
+                        { value: "cabin", label: "Cabin" },
+                        { value: "cottage", label: "Cottage" },
+                        { value: "townhouse", label: "Townhouse" },
+                        { value: "other", label: "Other" },
+                      ]
+                    : [
+                        { value: "single_family", label: "Single Family" },
+                        { value: "condo", label: "Condo" },
+                        { value: "townhouse", label: "Townhouse" },
+                        { value: "multi_family", label: "Multi-Family" },
+                        { value: "other", label: "Other" },
+                      ]
+                }
               />
             </div>
           </FormSection>
-          <FormSection title="Preparation Info">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Input label="Date Prepared" type="date" {...register("datePrepared")} />
-              <Input label="Prepared By" {...register("preparedBy")} />
-            </div>
-          </FormSection>
+          {!isHost && (
+            <FormSection title="Preparation Info">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <Input label="Date Prepared" type="date" {...register("datePrepared")} />
+                <Input label="Prepared By" {...register("preparedBy")} />
+              </div>
+            </FormSection>
+          )}
           <SubmitButton saveStatus={saveStatus} />
         </form>
       );
@@ -150,19 +166,19 @@ export function SectionFormRenderer({ sectionId, onSave }: SectionFormRendererPr
       return (
         <form onSubmit={onSubmit} className="space-y-6">
           <FormSection>
-            <UtilityContactFields register={register} prefix={"electric" as never} title="Electric" />
+            <UtilityContactFields register={register} prefix={"electric" as never} title="Electric" hideAccount={isHost} />
           </FormSection>
           <FormSection>
-            <UtilityContactFields register={register} prefix={"naturalGas" as never} title="Natural Gas" />
+            <UtilityContactFields register={register} prefix={"naturalGas" as never} title="Natural Gas" hideAccount={isHost} />
           </FormSection>
           <FormSection>
-            <UtilityContactFields register={register} prefix={"waterSewer" as never} title="Water / Sewer" />
+            <UtilityContactFields register={register} prefix={"waterSewer" as never} title="Water / Sewer" hideAccount={isHost} />
           </FormSection>
           <FormSection>
-            <UtilityContactFields register={register} prefix={"trashRecycling" as never} title="Trash / Recycling" />
+            <UtilityContactFields register={register} prefix={"trashRecycling" as never} title="Trash / Recycling" hideAccount={isHost} />
           </FormSection>
           <FormSection>
-            <UtilityContactFields register={register} prefix={"internet" as never} title="Internet" />
+            <UtilityContactFields register={register} prefix={"internet" as never} title="Internet" hideAccount={isHost} />
           </FormSection>
           <FormSection>
             <Toggle
@@ -172,7 +188,7 @@ export function SectionFormRenderer({ sectionId, onSave }: SectionFormRendererPr
             />
             {watchBool("hasCableStreaming") && (
               <div className="mt-4">
-                <UtilityContactFields register={register} prefix={"cableStreaming" as never} title="Cable / Streaming" />
+                <UtilityContactFields register={register} prefix={"cableStreaming" as never} title="Cable / Streaming" hideAccount={isHost} />
               </div>
             )}
           </FormSection>
@@ -184,7 +200,7 @@ export function SectionFormRenderer({ sectionId, onSave }: SectionFormRendererPr
             />
             {watchBool("hasLandline") && (
               <div className="mt-4">
-                <UtilityContactFields register={register} prefix={"landline" as never} title="Landline" />
+                <UtilityContactFields register={register} prefix={"landline" as never} title="Landline" hideAccount={isHost} />
               </div>
             )}
           </FormSection>
@@ -196,7 +212,7 @@ export function SectionFormRenderer({ sectionId, onSave }: SectionFormRendererPr
             />
             {watchBool("hasPropane") && (
               <div className="mt-4">
-                <UtilityContactFields register={register} prefix={"propane" as never} title="Propane" />
+                <UtilityContactFields register={register} prefix={"propane" as never} title="Propane" hideAccount={isHost} />
               </div>
             )}
           </FormSection>
@@ -292,37 +308,40 @@ export function SectionFormRenderer({ sectionId, onSave }: SectionFormRendererPr
     case "hvac":
       return (
         <form onSubmit={onSubmit} className="space-y-6">
-          <FormSection title="System Info">
+          <FormSection title={isHost ? "Climate Control" : "System Info"}>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Input label="System Type" placeholder="e.g. Central air, heat pump" {...register("systemType")} />
-              <Input label="Heating Fuel Source" placeholder="e.g. Natural gas, electric" {...register("heatingFuelSource")} />
-              <Input label="Unit Locations" placeholder="e.g. Basement, attic" {...register("unitLocations")} />
-              <Input label="Make / Model / Serial" {...register("makeModelSerial")} />
-              <Input label="Install Date" type="date" {...register("installDate")} />
-              <Input label="Last Service Date" type="date" {...register("lastServiceDate")} />
+              {!isHost && <Input label="Heating Fuel Source" placeholder="e.g. Natural gas, electric" {...register("heatingFuelSource")} />}
+              {!isHost && <Input label="Unit Locations" placeholder="e.g. Basement, attic" {...register("unitLocations")} />}
+              {!isHost && <Input label="Make / Model / Serial" {...register("makeModelSerial")} />}
+              {!isHost && <Input label="Install Date" type="date" {...register("installDate")} />}
+              {!isHost && <Input label="Last Service Date" type="date" {...register("lastServiceDate")} />}
             </div>
           </FormSection>
-          <FormSection title="Service Company">
+          {!isHost && (
+            <FormSection title="Service Company">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <Input label="Company Name" {...register("serviceCompany.name")} />
+                <Input label="Phone" {...register("serviceCompany.phone")} />
+              </div>
+            </FormSection>
+          )}
+          <FormSection title={isHost ? "Thermostat" : "Filters & Thermostat"}>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Input label="Company Name" {...register("serviceCompany.name")} />
-              <Input label="Phone" {...register("serviceCompany.phone")} />
-            </div>
-          </FormSection>
-          <FormSection title="Filters & Thermostat">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Input label="Filter Sizes" {...register("filterSizes")} />
-              <Input label="Filter Change Frequency" {...register("filterChangeFrequency")} />
+              {!isHost && <Input label="Filter Sizes" {...register("filterSizes")} />}
+              {!isHost && <Input label="Filter Change Frequency" {...register("filterChangeFrequency")} />}
               <Input label="Thermostat Type" {...register("thermostatType")} />
             </div>
             <div className="mt-4">
               <Toggle
                 label="Has zones?"
+                description={isHost ? "Different areas have different controls" : undefined}
                 checked={watchBool("hasZones")}
                 onChange={(v) => setValue("hasZones", v)}
               />
               {watchBool("hasZones") && (
                 <div className="mt-3">
-                  <Textarea label="Zones Description" {...register("zonesDescription")} />
+                  <Textarea label="Zones Description" placeholder={isHost ? "How to control temperature in different areas..." : undefined} {...register("zonesDescription")} />
                 </div>
               )}
             </div>
@@ -368,7 +387,7 @@ export function SectionFormRenderer({ sectionId, onSave }: SectionFormRendererPr
       );
 
     case "majorAppliances":
-      return <MajorAppliancesForm register={register} watch={watch} setValue={setValue} control={control} onSubmit={onSubmit} saveStatus={saveStatus} />;
+      return <MajorAppliancesForm register={register} watch={watch} setValue={setValue} control={control} onSubmit={onSubmit} saveStatus={saveStatus} isHost={isHost} />;
 
     case "exteriorSystems":
       return (
@@ -625,10 +644,10 @@ export function SectionFormRenderer({ sectionId, onSave }: SectionFormRendererPr
       );
 
     case "localKnowledge":
-      return <LocalKnowledgeForm register={register} watch={watch} setValue={setValue} control={control} onSubmit={onSubmit} saveStatus={saveStatus} />;
+      return <LocalKnowledgeForm register={register} watch={watch} setValue={setValue} control={control} onSubmit={onSubmit} saveStatus={saveStatus} isHost={isHost} />;
 
     case "quirksTips":
-      return <QuirksTipsForm control={control} onSubmit={onSubmit} saveStatus={saveStatus} />;
+      return <QuirksTipsForm control={control} onSubmit={onSubmit} saveStatus={saveStatus} isHost={isHost} />;
 
     case "documentVault":
       return (
@@ -648,9 +667,12 @@ export function SectionFormRenderer({ sectionId, onSave }: SectionFormRendererPr
     case "welcomeLetter":
       return (
         <form onSubmit={onSubmit} className="space-y-6">
-          <FormSection title="Welcome Letter" description="Write a personal note to the new homeowners.">
+          <FormSection
+            title={isHost ? "Welcome Message" : "Welcome Letter"}
+            description={isHost ? "Write a personal welcome note for your guests." : "Write a personal note to the new homeowners."}
+          >
             <Textarea
-              placeholder="Dear new homeowner..."
+              placeholder={isHost ? "Welcome to our home! We're so glad you're here..." : "Dear new homeowner..."}
               className="min-h-[200px]"
               {...register("welcomeLetter")}
             />
@@ -915,13 +937,14 @@ function SubPanelFields({ control, register, watch, setValue }: {
 }
 
 // --- Major Appliances Form ---
-function MajorAppliancesForm({ register, watch, setValue, control, onSubmit, saveStatus }: {
+function MajorAppliancesForm({ register, watch, setValue, control, onSubmit, saveStatus, isHost = false }: {
   register: ReturnType<typeof useForm>["register"];
   watch: ReturnType<typeof useForm>["watch"];
   setValue: ReturnType<typeof useForm>["setValue"];
   control: ReturnType<typeof useForm>["control"];
   onSubmit: () => void;
   saveStatus: "idle" | "saving" | "saved";
+  isHost?: boolean;
 }) {
   const { fields, append, remove } = useFieldArray({
     control,
@@ -953,10 +976,10 @@ function MajorAppliancesForm({ register, watch, setValue, control, onSubmit, sav
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
               <Input label="Make" {...register(`${key}.make`)} />
               <Input label="Model" {...register(`${key}.model`)} />
-              <Input label="Serial" {...register(`${key}.serial`)} />
-              <Input label="Install Date" type="date" {...register(`${key}.installDate`)} />
-              <Input label="Warranty Status" {...register(`${key}.warrantyStatus`)} />
-              <Input label="Manual Location" {...register(`${key}.manualLocation`)} />
+              {!isHost && <Input label="Serial" {...register(`${key}.serial`)} />}
+              {!isHost && <Input label="Install Date" type="date" {...register(`${key}.installDate`)} />}
+              {!isHost && <Input label="Warranty Status" {...register(`${key}.warrantyStatus`)} />}
+              <Input label={isHost ? "Instructions / Notes" : "Manual Location"} {...register(`${key}.manualLocation`)} />
             </div>
           )}
         </FormSection>
@@ -1062,13 +1085,14 @@ function MaintenanceContactsForm({ register, watch, setValue, control, onSubmit,
 }
 
 // --- Local Knowledge Form ---
-function LocalKnowledgeForm({ register, watch, setValue, control, onSubmit, saveStatus }: {
+function LocalKnowledgeForm({ register, watch, setValue, control, onSubmit, saveStatus, isHost = false }: {
   register: ReturnType<typeof useForm>["register"];
   watch: ReturnType<typeof useForm>["watch"];
   setValue: ReturnType<typeof useForm>["setValue"];
   control: ReturnType<typeof useForm>["control"];
   onSubmit: () => void;
   saveStatus: "idle" | "saving" | "saved";
+  isHost?: boolean;
 }) {
   const { fields, append, remove } = useFieldArray({
     control,
@@ -1077,91 +1101,112 @@ function LocalKnowledgeForm({ register, watch, setValue, control, onSubmit, save
 
   return (
     <form onSubmit={onSubmit} className="space-y-6">
+      {!isHost && (
+        <FormSection>
+          <Toggle label="Trusted neighbors?" checked={!!watch("hasTrustedNeighbors")} onChange={(v) => setValue("hasTrustedNeighbors", v)} />
+          {watch("hasTrustedNeighbors") && (
+            <div className="mt-4">
+              <RepeatableField
+                label="Trusted Neighbors"
+                items={fields}
+                onAdd={() => append({ name: "", address: "", phone: "", helpsWith: "" })}
+                onRemove={remove}
+                addLabel="Add neighbor"
+                renderItem={(_item, index) => (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <Input label="Name" {...register(`trustedNeighbors.${index}.name`)} />
+                    <Input label="Address" {...register(`trustedNeighbors.${index}.address`)} />
+                    <Input label="Phone" {...register(`trustedNeighbors.${index}.phone`)} />
+                    <Input label="Helps With" {...register(`trustedNeighbors.${index}.helpsWith`)} />
+                  </div>
+                )}
+              />
+            </div>
+          )}
+        </FormSection>
+      )}
       <FormSection>
-        <Toggle label="Trusted neighbors?" checked={!!watch("hasTrustedNeighbors")} onChange={(v) => setValue("hasTrustedNeighbors", v)} />
-        {watch("hasTrustedNeighbors") && (
-          <div className="mt-4">
-            <RepeatableField
-              label="Trusted Neighbors"
-              items={fields}
-              onAdd={() => append({ name: "", address: "", phone: "", helpsWith: "" })}
-              onRemove={remove}
-              addLabel="Add neighbor"
-              renderItem={(_item, index) => (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <Input label="Name" {...register(`trustedNeighbors.${index}.name`)} />
-                  <Input label="Address" {...register(`trustedNeighbors.${index}.address`)} />
-                  <Input label="Phone" {...register(`trustedNeighbors.${index}.phone`)} />
-                  <Input label="Helps With" {...register(`trustedNeighbors.${index}.helpsWith`)} />
-                </div>
-              )}
-            />
-          </div>
-        )}
-      </FormSection>
-      <FormSection>
-        <Toggle label="Local recommendations?" checked={!!watch("hasRecommendations")} onChange={(v) => setValue("hasRecommendations", v)} />
+        <Toggle label={isHost ? "Restaurant & activity recommendations?" : "Local recommendations?"} checked={!!watch("hasRecommendations")} onChange={(v) => setValue("hasRecommendations", v)} />
         {watch("hasRecommendations") && (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-            <Input label="Grocery" {...register("recommendations.grocery")} />
-            <Input label="Hardware" {...register("recommendations.hardware")} />
-            <Input label="Pharmacy" {...register("recommendations.pharmacy")} />
+            <Input label={isHost ? "Restaurants" : "Grocery"} placeholder={isHost ? "Best nearby restaurants..." : undefined} {...register("recommendations.grocery")} />
+            <Input label={isHost ? "Activities" : "Hardware"} placeholder={isHost ? "Things to do nearby..." : undefined} {...register("recommendations.hardware")} />
+            <Input label={isHost ? "Coffee / Breakfast" : "Pharmacy"} placeholder={isHost ? "Morning spots..." : undefined} {...register("recommendations.pharmacy")} />
           </div>
         )}
       </FormSection>
-      <FormSection>
-        <Toggle label="Vet?" checked={!!watch("hasVet")} onChange={(v) => setValue("hasVet", v)} />
-        {watch("hasVet") && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-            <Input label="Name" {...register("vet.name")} />
-            <Input label="Phone" {...register("vet.phone")} />
-            <Input label="Address" {...register("vet.address")} />
-          </div>
-        )}
-      </FormSection>
-      {[
-        { key: "hasLocalQuirks", label: "Local quirks?", field: <Textarea label="Details" {...register("localQuirks")} /> },
-        { key: "hasSchoolDistrict", label: "School district info?", field: <Textarea label="Details" {...register("schoolDistrict")} /> },
-        { key: "hasTrafficNotes", label: "Traffic notes?", field: <Textarea label="Details" {...register("trafficNotes")} /> },
-      ].map(({ key, label, field }) => (
-        <FormSection key={key}>
-          <Toggle label={label} checked={!!watch(key)} onChange={(v) => setValue(key, v)} />
-          {watch(key) && <div className="mt-4">{field}</div>}
+      {!isHost && (
+        <FormSection>
+          <Toggle label="Vet?" checked={!!watch("hasVet")} onChange={(v) => setValue("hasVet", v)} />
+          {watch("hasVet") && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+              <Input label="Name" {...register("vet.name")} />
+              <Input label="Phone" {...register("vet.phone")} />
+              <Input label="Address" {...register("vet.address")} />
+            </div>
+          )}
         </FormSection>
-      ))}
+      )}
+      <FormSection>
+        <Toggle label={isHost ? "Area tips for guests?" : "Local quirks?"} checked={!!watch("hasLocalQuirks")} onChange={(v) => setValue("hasLocalQuirks", v)} />
+        {watch("hasLocalQuirks") && <div className="mt-4"><Textarea label="Details" placeholder={isHost ? "Best sunset spot, farmers market days, beach access..." : undefined} {...register("localQuirks")} /></div>}
+      </FormSection>
+      {!isHost && (
+        <>
+          <FormSection>
+            <Toggle label="School district info?" checked={!!watch("hasSchoolDistrict")} onChange={(v) => setValue("hasSchoolDistrict", v)} />
+            {watch("hasSchoolDistrict") && <div className="mt-4"><Textarea label="Details" {...register("schoolDistrict")} /></div>}
+          </FormSection>
+          <FormSection>
+            <Toggle label="Traffic notes?" checked={!!watch("hasTrafficNotes")} onChange={(v) => setValue("hasTrafficNotes", v)} />
+            {watch("hasTrafficNotes") && <div className="mt-4"><Textarea label="Details" {...register("trafficNotes")} /></div>}
+          </FormSection>
+        </>
+      )}
       <SubmitButton saveStatus={saveStatus} />
     </form>
   );
 }
 
 // --- Quirks & Tips Form ---
-function QuirksTipsForm({ control, onSubmit, saveStatus }: {
+function QuirksTipsForm({ control, onSubmit, saveStatus, isHost = false }: {
   control: ReturnType<typeof useForm>["control"];
   onSubmit: () => void;
   saveStatus: "idle" | "saving" | "saved";
+  isHost?: boolean;
 }) {
   const { fields, append, remove } = useFieldArray({
     control,
     name: "quirks",
   });
 
+  const hostPlaceholders = [
+    "The TV remote is in the nightstand drawer.",
+    "Hot water takes about 30 seconds to warm up.",
+    "The back door needs a firm push to lock.",
+    "The pool light switch is behind the garage door.",
+  ];
+  const sellerPlaceholders = [
+    "The dishwasher needs the door slammed twice to seal.",
+    "Garage door opener struggles in cold weather, hold the button for 3 seconds.",
+    "Mailbox door sticks, lift while turning.",
+    "Hot water in the master bath takes 90 seconds to arrive.",
+  ];
+  const placeholders = isHost ? hostPlaceholders : sellerPlaceholders;
+
   return (
     <form onSubmit={onSubmit} className="space-y-6">
-      <FormSection title="House Quirks" description="Things only the current owner would know.">
+      <FormSection
+        title={isHost ? "Tips & Need-to-Know" : "House Quirks"}
+        description={isHost ? "Things that make the stay smoother." : "Things only the current owner would know."}
+      >
         <div className="space-y-3">
           {fields.map((field, index) => (
             <div key={field.id} className="flex gap-2">
               <input
                 {...control.register(`quirks.${index}`)}
                 className="flex-1 px-4 py-2.5 text-sm border border-border rounded-xl bg-surface text-text-primary placeholder:text-text-secondary/50 focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition-all duration-200"
-                placeholder={
-                  [
-                    "The dishwasher needs the door slammed twice to seal.",
-                    "Garage door opener struggles in cold weather, hold the button for 3 seconds.",
-                    "Mailbox door sticks, lift while turning.",
-                    "Hot water in the master bath takes 90 seconds to arrive.",
-                  ][index % 4]
-                }
+                placeholder={placeholders[index % 4]}
               />
               <button
                 type="button"
@@ -1178,7 +1223,7 @@ function QuirksTipsForm({ control, onSubmit, saveStatus }: {
             onClick={() => append("")}
             className="inline-flex items-center gap-1.5 text-sm font-medium text-accent hover:text-accent-hover transition-colors cursor-pointer"
           >
-            + Add a quirk
+            + Add {isHost ? "a tip" : "a quirk"}
           </button>
         </div>
       </FormSection>
