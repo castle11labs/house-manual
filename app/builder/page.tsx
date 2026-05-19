@@ -13,18 +13,8 @@ export default function BuilderDashboard() {
   const [checked, setChecked] = useState(false);
 
   useEffect(() => {
-    const m = loadMode();
-    if (m) {
-      // Mode already set — go straight to first section
-      const sections = getSectionsForMode(m);
-      router.replace(`/builder/${sections[0].slug}`);
-    } else {
-      setChecked(true);
-    }
-  }, [router]);
-
-  // Already has mode — redirecting
-  if (!checked) return null;
+    setChecked(true);
+  }, []);
 
   const handleSelect = (m: ManualMode) => {
     saveMode(m);
