@@ -42,8 +42,8 @@ export function Footer() {
             </h4>
             <nav className="flex flex-col gap-2">
               <FooterLink href="/#privacy">Privacy</FooterLink>
-              <FooterLink href="https://github.com/castle11labs/house-manual">
-                GitHub
+              <FooterLink href="mailto:hello@castle11.com">
+                Contact
               </FooterLink>
             </nav>
           </div>
@@ -51,8 +51,7 @@ export function Footer() {
 
         <div className="mt-10 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-2">
           <p className="text-xs">
-            &copy; {new Date().getFullYear()} House Manual. Free and
-            open-source.
+            &copy; {new Date().getFullYear()} House Manual.
           </p>
           <p className="text-xs">
             No data leaves your browser.

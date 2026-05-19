@@ -6,7 +6,7 @@ import { ChevronDown } from "lucide-react";
 const faqs = [
   {
     q: "Is this really free?",
-    a: "Yes, completely free. No hidden fees, no premium tier, no account required. The tool is open-source and available on GitHub.",
+    a: "Yes, completely free. No hidden fees, no premium tier, no account required.",
   },
   {
     q: "Where is my data stored?",
