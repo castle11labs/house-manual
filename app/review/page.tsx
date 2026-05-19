@@ -8,11 +8,15 @@ import { getSectionsForMode } from "@/lib/sections";
 import { isSectionComplete } from "@/lib/storage";
 import type { HouseManualData, SectionKey } from "@/lib/schema";
 import type { ManualMode } from "@/types";
+import type { PDFTheme } from "@/lib/pdf/themes";
+import { defaultTheme } from "@/lib/pdf/themes";
 import { Button } from "@/components/ui/Button";
+import { ThemePicker } from "@/components/review/ThemePicker";
 
 export default function ReviewPage() {
   const [data, setData] = useState<HouseManualData | null>(null);
   const [mode, setMode] = useState<ManualMode>("seller");
+  const [theme, setTheme] = useState<PDFTheme>(defaultTheme);
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -27,6 +31,7 @@ export default function ReviewPage() {
 
   const sections = getSectionsForMode(mode);
   const filledSections = sections.filter((s) => isSectionComplete(data, s.id) !== "empty");
+  const modeLabel = mode === "host" ? "Guest Manual" : "House Manual";
 
   const handleGenerate = async () => {
     setGenerating(true);
@@ -37,7 +42,7 @@ export default function ReviewPage() {
       const response = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ data, mode }),
+        body: JSON.stringify({ data, mode, theme }),
       });
 
       if (!response.ok) {
@@ -53,7 +58,7 @@ export default function ReviewPage() {
 
       const a = document.createElement("a");
       a.href = url;
-      a.download = `House-Manual-${slug}.pdf`;
+      a.download = `${modeLabel.replace(/\s/g, "-")}-${slug}.pdf`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -75,17 +80,21 @@ export default function ReviewPage() {
             className="inline-flex items-center gap-1 text-sm text-text-secondary hover:text-text-primary transition-colors mb-4"
           >
             <ChevronLeft className="w-4 h-4" />
-            Back to dashboard
+            Back to builder
           </Link>
           <h1 className="text-2xl font-bold text-text-primary">
-            Review Your House Manual
+            Review Your {modeLabel}
           </h1>
           <p className="text-sm text-text-secondary mt-1">
             {filledSections.length} of {sections.length} sections have data.
-            Review below, then generate your PDF.
+            Choose a theme, review your content, then generate.
           </p>
         </div>
 
+        {/* Theme picker */}
+        <ThemePicker theme={theme} onChange={setTheme} />
+
+        {/* Section review */}
         {filledSections.length === 0 ? (
           <div className="bg-surface border border-border rounded-2xl p-8 text-center space-y-3">
             <p className="text-text-secondary">No sections filled out yet.</p>

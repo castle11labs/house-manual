@@ -8,13 +8,19 @@ import {
 } from "@react-pdf/renderer";
 import type { HouseManualData } from "@/lib/schema";
 import type { ManualMode } from "@/types";
+import type { PDFTheme } from "./themes";
+import { defaultTheme } from "./themes";
 import { getSectionsForMode } from "@/lib/sections";
-import { styles } from "./components/PDFStyles";
+import { createStyles } from "./components/PDFStyles";
 
 interface HouseManualPDFProps {
   data: HouseManualData;
   mode?: ManualMode;
+  theme?: PDFTheme;
 }
+
+// Module-level styles ref — set by the main component before render
+let styles = createStyles(defaultTheme);
 
 // ─── Shared Components ───────────────────────────────────────────────
 
@@ -177,7 +183,10 @@ function getCompletedSections(data: HouseManualData, mode: ManualMode = "seller"
 
 // ─── Main Document ───────────────────────────────────────────────────
 
-export function HouseManualPDF({ data, mode = "seller" }: HouseManualPDFProps) {
+export function HouseManualPDF({ data, mode = "seller", theme = defaultTheme }: HouseManualPDFProps) {
+  // Rebuild styles for this render
+  styles = createStyles(theme);
+
   const address = data.propertyBasics?.address || "Property";
   const cityStateZip = data.propertyBasics?.cityStateZip || "";
   const completedSections = getCompletedSections(data, mode);
