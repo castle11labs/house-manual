@@ -20,70 +20,74 @@ export interface StyleConfig {
   coverTitleSize: number;
   sectionTitleSize: number;
   borderRadius: number;
-  coverLayout: "dark" | "light" | "accent";
+  coverAccentBar: boolean;   // thin color bar at top of cover
+  coverCentered: boolean;    // center-align cover text
 }
 
 export const styleConfigs: Record<PDFStyleName, StyleConfig> = {
   modern: {
     name: "Modern",
-    description: "Dark cover, clean lines, card-based layout",
+    description: "Bold color bar, clean lines, card layout",
     coverFont: "Helvetica",
     coverFontBold: "Helvetica-Bold",
     bodyFont: "Helvetica",
     bodyFontBold: "Helvetica-Bold",
-    coverTitleSize: 40,
+    coverTitleSize: 36,
     sectionTitleSize: 20,
     borderRadius: 6,
-    coverLayout: "dark",
+    coverAccentBar: true,
+    coverCentered: false,
   },
   classic: {
     name: "Classic",
-    description: "White cover, serif headings, traditional feel",
+    description: "Serif headings, traditional, formal feel",
     coverFont: "Times-Roman",
     coverFontBold: "Times-Bold",
     bodyFont: "Helvetica",
     bodyFontBold: "Helvetica-Bold",
-    coverTitleSize: 36,
+    coverTitleSize: 32,
     sectionTitleSize: 18,
     borderRadius: 0,
-    coverLayout: "light",
+    coverAccentBar: false,
+    coverCentered: true,
   },
   minimal: {
     name: "Minimal",
-    description: "Light cover, lots of whitespace, understated",
+    description: "Lots of whitespace, understated, quiet",
     coverFont: "Helvetica",
     coverFontBold: "Helvetica-Bold",
     bodyFont: "Helvetica",
     bodyFontBold: "Helvetica-Bold",
-    coverTitleSize: 32,
+    coverTitleSize: 28,
     sectionTitleSize: 16,
     borderRadius: 4,
-    coverLayout: "light",
+    coverAccentBar: false,
+    coverCentered: false,
   },
   warm: {
     name: "Warm",
-    description: "Accent cover, friendly tone, rounded elements",
+    description: "Friendly, rounded, color accents throughout",
     coverFont: "Helvetica",
     coverFontBold: "Helvetica-Bold",
     bodyFont: "Helvetica",
     bodyFontBold: "Helvetica-Bold",
-    coverTitleSize: 38,
+    coverTitleSize: 34,
     sectionTitleSize: 19,
     borderRadius: 8,
-    coverLayout: "accent",
+    coverAccentBar: true,
+    coverCentered: true,
   },
 };
 
 // ─── Color definitions ───────────────────────────────────────────────
+// All print-friendly: white backgrounds, color used only for
+// text accents, thin lines, and light tints.
 
 export interface ColorConfig {
   name: string;
   hex: string;
   accent: string;
-  accentLight: string; // for striped rows / bg tints
-  coverBg: string;     // dark cover bg
-  coverText: string;   // text on cover
-  coverMuted: string;  // muted text on cover
+  accentLight: string; // very light tint for striped rows
 }
 
 export const colorConfigs: Record<PDFColorName, ColorConfig> = {
@@ -91,73 +95,49 @@ export const colorConfigs: Record<PDFColorName, ColorConfig> = {
     name: "Blue",
     hex: "#007AFC",
     accent: "#007AFC",
-    accentLight: "#EBF5FF",
-    coverBg: "#0E1012",
-    coverText: "#FFFFFF",
-    coverMuted: "#8B9CAC",
+    accentLight: "#F0F7FF",
   },
   teal: {
     name: "Teal",
     hex: "#0F766E",
     accent: "#0F766E",
     accentLight: "#F0FDFA",
-    coverBg: "#0C1515",
-    coverText: "#FFFFFF",
-    coverMuted: "#7CA3A0",
   },
   navy: {
     name: "Navy",
     hex: "#1E3A5F",
     accent: "#1E3A5F",
     accentLight: "#EEF2F7",
-    coverBg: "#0D1B2A",
-    coverText: "#FFFFFF",
-    coverMuted: "#8899AA",
   },
   charcoal: {
     name: "Charcoal",
     hex: "#374151",
     accent: "#374151",
     accentLight: "#F3F4F6",
-    coverBg: "#111827",
-    coverText: "#FFFFFF",
-    coverMuted: "#9CA3AF",
   },
   forest: {
     name: "Forest",
     hex: "#166534",
     accent: "#166534",
     accentLight: "#F0FDF4",
-    coverBg: "#0B1A0F",
-    coverText: "#FFFFFF",
-    coverMuted: "#7DA88A",
   },
   burgundy: {
     name: "Burgundy",
     hex: "#7F1D1D",
     accent: "#7F1D1D",
     accentLight: "#FEF2F2",
-    coverBg: "#1A0A0A",
-    coverText: "#FFFFFF",
-    coverMuted: "#B08080",
   },
   slate: {
     name: "Slate",
     hex: "#475569",
     accent: "#475569",
     accentLight: "#F1F5F9",
-    coverBg: "#0F172A",
-    coverText: "#FFFFFF",
-    coverMuted: "#94A3B8",
   },
   sunset: {
     name: "Sunset",
     hex: "#C2410C",
     accent: "#C2410C",
     accentLight: "#FFF7ED",
-    coverBg: "#1C0E05",
-    coverText: "#FFFFFF",
-    coverMuted: "#B89070",
   },
 };
 

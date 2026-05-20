@@ -6,15 +6,6 @@ export function createStyles(theme: PDFTheme = defaultTheme) {
   const style = styleConfigs[theme.style];
   const color = colorConfigs[theme.color];
 
-  const isLightCover = style.coverLayout === "light";
-  const isAccentCover = style.coverLayout === "accent";
-
-  const coverBg = isAccentCover ? color.accent : isLightCover ? "#FFFFFF" : color.coverBg;
-  const coverTextColor = isLightCover ? "#0E1012" : color.coverText;
-  const coverMutedColor = isLightCover ? "#6B7280" : color.coverMuted;
-  const coverAccentColor = isLightCover ? color.accent : isAccentCover ? "#FFFFFF" : color.accent;
-  const coverDividerColor = isLightCover ? color.accent : isAccentCover ? "rgba(255,255,255,0.3)" : color.accent;
-
   return StyleSheet.create({
     // --- Pages ---
     page: {
@@ -26,57 +17,75 @@ export function createStyles(theme: PDFTheme = defaultTheme) {
       color: "#0E1012",
       backgroundColor: "#FFFFFF",
     },
+
+    // --- Cover (always white bg, ink-friendly) ---
     coverPage: {
       paddingHorizontal: 56,
       fontFamily: style.coverFont,
       display: "flex",
       flexDirection: "column",
       justifyContent: "center",
-      backgroundColor: coverBg,
+      backgroundColor: "#FFFFFF",
+    },
+    coverAccentBar: {
+      position: "absolute",
+      top: 0,
+      left: 0,
+      right: 0,
+      height: style.coverAccentBar ? 6 : 0,
+      backgroundColor: color.accent,
     },
     coverBadge: {
       fontSize: 10,
       fontFamily: style.coverFontBold,
-      color: coverAccentColor,
+      color: color.accent,
       letterSpacing: 3,
       textTransform: "uppercase",
       marginBottom: 16,
+      textAlign: style.coverCentered ? "center" : "left",
     },
     coverTitle: {
       fontSize: style.coverTitleSize,
       fontFamily: style.coverFontBold,
       lineHeight: 1.15,
       marginBottom: 12,
-      color: coverTextColor,
+      color: "#0E1012",
+      textAlign: style.coverCentered ? "center" : "left",
     },
     coverAddress: {
       fontSize: 18,
       fontFamily: style.coverFont,
       marginBottom: 4,
-      color: coverTextColor,
+      color: "#0E1012",
+      textAlign: style.coverCentered ? "center" : "left",
     },
     coverCityState: {
       fontSize: 14,
-      color: coverMutedColor,
+      color: "#6B7280",
       marginBottom: 32,
+      textAlign: style.coverCentered ? "center" : "left",
     },
     coverMeta: {
       fontSize: 10,
-      color: coverMutedColor,
+      color: "#6B7280",
       marginBottom: 3,
+      textAlign: style.coverCentered ? "center" : "left",
     },
     coverDivider: {
-      width: 48,
+      width: style.coverCentered ? 64 : 48,
       borderBottomWidth: 2,
-      borderBottomColor: coverDividerColor,
+      borderBottomColor: color.accent,
       marginBottom: 16,
+      ...(style.coverCentered ? { alignSelf: "center" as const } : {}),
     },
     coverFooter: {
       position: "absolute",
       bottom: 40,
       left: 56,
+      right: 56,
       fontSize: 8,
-      color: coverMutedColor,
+      color: "#9CA3AF",
+      textAlign: style.coverCentered ? "center" : "left",
     },
 
     // --- TOC ---
@@ -202,7 +211,7 @@ export function createStyles(theme: PDFTheme = defaultTheme) {
       flexDirection: "row",
       justifyContent: "space-between",
       fontSize: 8,
-      color: "#8B9CAC",
+      color: "#9CA3AF",
       borderTopWidth: 1,
       borderTopColor: "#E3E6E8",
       paddingTop: 8,
@@ -231,5 +240,4 @@ export function createStyles(theme: PDFTheme = defaultTheme) {
   });
 }
 
-// Backward compat — default export
 export const styles = createStyles(defaultTheme);

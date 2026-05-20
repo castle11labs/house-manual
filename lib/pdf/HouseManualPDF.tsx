@@ -194,8 +194,9 @@ export function HouseManualPDF({ data, mode = "seller", theme = defaultTheme }: 
 
   return (
     <Document>
-      {/* Cover Page — dark background */}
+      {/* Cover Page */}
       <Page size="LETTER" style={styles.coverPage}>
+        <View style={styles.coverAccentBar} fixed />
         <View style={{ flex: 1, justifyContent: "center", paddingHorizontal: 56 }}>
           <Text style={styles.coverBadge}>{docTitle}</Text>
           <Text style={styles.coverTitle}>{address}</Text>

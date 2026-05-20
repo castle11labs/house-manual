@@ -86,24 +86,20 @@ export function ThemePicker({ theme, onChange }: ThemePickerProps) {
 function StylePreview({ style, color }: { style: PDFStyleName; color: PDFColorName }) {
   const styleConfig = styleConfigs[style];
   const colorConfig = colorConfigs[color];
-
-  const isLight = styleConfig.coverLayout === "light";
-  const isAccent = styleConfig.coverLayout === "accent";
-  const bg = isAccent ? colorConfig.accent : isLight ? "#FFFFFF" : colorConfig.coverBg;
-  const textColor = isLight ? "#0E1012" : "#FFFFFF";
-  const accentColor = isLight ? colorConfig.accent : isAccent ? "#FFFFFF" : colorConfig.accent;
+  const centered = styleConfig.coverCentered;
 
   return (
-    <div
-      className="w-full aspect-[8.5/11] rounded-md overflow-hidden border border-border/50"
-      style={{ backgroundColor: bg }}
-    >
+    <div className="w-full aspect-[8.5/11] rounded-md overflow-hidden border border-border/50 bg-white relative">
+      {/* Accent bar */}
+      {styleConfig.coverAccentBar && (
+        <div className="absolute top-0 left-0 right-0 h-[3px]" style={{ backgroundColor: colorConfig.hex }} />
+      )}
       {/* Mini cover preview */}
-      <div className="flex flex-col justify-center h-full px-2 py-1.5">
-        <div className="w-6 h-[2px] mb-1" style={{ backgroundColor: accentColor }} />
-        <div className="w-full h-[3px] rounded-full mb-0.5" style={{ backgroundColor: textColor, opacity: 0.8 }} />
-        <div className="w-3/4 h-[3px] rounded-full mb-1.5" style={{ backgroundColor: textColor, opacity: 0.4 }} />
-        <div className="w-4 h-[1.5px]" style={{ backgroundColor: accentColor }} />
+      <div className={`flex flex-col justify-center h-full px-2 py-1.5 ${centered ? "items-center" : ""}`}>
+        <div className="w-6 h-[2px] mb-1" style={{ backgroundColor: colorConfig.hex }} />
+        <div className={`${centered ? "w-3/4" : "w-full"} h-[3px] rounded-full mb-0.5 bg-gray-800 opacity-80`} />
+        <div className={`${centered ? "w-1/2" : "w-3/4"} h-[3px] rounded-full mb-1.5 bg-gray-400 opacity-50`} />
+        <div className={`w-4 h-[1.5px] ${centered ? "" : ""}`} style={{ backgroundColor: colorConfig.hex }} />
       </div>
     </div>
   );
