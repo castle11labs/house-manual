@@ -68,8 +68,8 @@ const allSections: Omit<SectionMeta, "number">[] = [
   },
   {
     id: "waterHeater",
-    title: "Water Heater",
-    description: "Type, fuel, location, and maintenance details.",
+    title: "Water Systems",
+    description: "Water heater, softener/conditioner, and radon detection.",
     slug: "water-heater",
     modes: ["seller"],
   },

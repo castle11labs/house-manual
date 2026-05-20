@@ -327,10 +327,18 @@ export function SectionFormRenderer({ sectionId, onSave, mode = "seller" }: Sect
             </FormSection>
           )}
           <FormSection title={isHost ? "Thermostat" : "Filters & Thermostat"}>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {!isHost && <Input label="Filter Sizes" {...register("filterSizes")} />}
-              {!isHost && <Input label="Filter Change Frequency" {...register("filterChangeFrequency")} />}
-              <Input label="Thermostat Type" {...register("thermostatType")} />
+            {!isHost && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <Input label="Furnace Filter Size" placeholder="e.g. 20x25x1" {...register("filterSizes")} />
+                <Input label="Filter Change Frequency" placeholder="e.g. Every 3 months" {...register("filterChangeFrequency")} />
+                <Input label="AC Return Filter Sizes" placeholder="e.g. 14x20x1, 20x20x1" {...register("acReturnFilterSizes")} />
+                <Input label="AC Return Locations" placeholder="e.g. Hallway ceiling, master bedroom wall" {...register("acReturnLocations")} />
+              </div>
+            )}
+            <div className={!isHost ? "mt-4" : ""}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <Input label="Thermostat Type" {...register("thermostatType")} />
+              </div>
             </div>
             <div className="mt-4">
               <Toggle
@@ -346,6 +354,14 @@ export function SectionFormRenderer({ sectionId, onSave, mode = "seller" }: Sect
               )}
             </div>
           </FormSection>
+          {!isHost && (
+            <FormSection title="Vents & Exhaust">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <Input label="Dryer Vent Location" placeholder="e.g. Exterior wall behind laundry room" {...register("dryerVentLocation")} />
+                <Input label="Exhaust Fan Locations" placeholder="e.g. Bathrooms, kitchen range hood, attic" {...register("exhaustFanLocations")} />
+              </div>
+            </FormSection>
+          )}
           <SubmitButton saveStatus={saveStatus} />
         </form>
       );
@@ -353,7 +369,7 @@ export function SectionFormRenderer({ sectionId, onSave, mode = "seller" }: Sect
     case "waterHeater":
       return (
         <form onSubmit={onSubmit} className="space-y-6">
-          <FormSection>
+          <FormSection title="Water Heater">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Select
                 label="Type"
@@ -381,6 +397,28 @@ export function SectionFormRenderer({ sectionId, onSave, mode = "seller" }: Sect
               <Input label="Capacity" placeholder="e.g. 50 gallons" {...register("capacity")} />
               <Input label="Last Flush / Service" type="date" {...register("lastFlushService")} />
             </div>
+          </FormSection>
+          <FormSection title="Water Softener / Conditioner">
+            <Toggle label="Water softener or conditioner?" checked={watchBool("hasWaterSoftener")} onChange={(v) => setValue("hasWaterSoftener", v)} />
+            {watchBool("hasWaterSoftener") && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+                <Input label="System Type" placeholder="e.g. Salt-based, salt-free, reverse osmosis" {...register("waterSoftenerType")} />
+                <Input label="Location" placeholder="e.g. Basement, utility closet" {...register("waterSoftenerLocation")} />
+                <Input label="Salt Type" placeholder="e.g. Pellets, crystals, potassium chloride" {...register("waterSoftenerSaltType")} />
+                <Input label="Service Schedule" placeholder="e.g. Add salt monthly, annual service" {...register("waterSoftenerServiceSchedule")} />
+              </div>
+            )}
+          </FormSection>
+          <FormSection title="Radon Detection / Mitigation">
+            <Toggle label="Radon system installed?" checked={watchBool("hasRadonSystem")} onChange={(v) => setValue("hasRadonSystem", v)} />
+            {watchBool("hasRadonSystem") && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+                <Input label="System Type" placeholder="e.g. Sub-slab depressurization, passive" {...register("radonSystemType")} />
+                <Input label="Location" placeholder="e.g. Basement, crawl space" {...register("radonSystemLocation")} />
+                <Input label="Last Test Date" type="date" {...register("radonLastTestDate")} />
+                <Input label="Last Test Result" placeholder="e.g. 1.2 pCi/L" {...register("radonLastTestResult")} />
+              </div>
+            )}
           </FormSection>
           <SubmitButton saveStatus={saveStatus} />
         </form>

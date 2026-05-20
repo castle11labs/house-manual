@@ -108,9 +108,14 @@ const hvacSchema = z.object({
     .optional(),
   filterSizes: z.string().optional(),
   filterChangeFrequency: z.string().optional(),
+  acReturnFilterSizes: z.string().optional(),
+  acReturnLocations: z.string().optional(),
   thermostatType: z.string().optional(),
   hasZones: z.boolean().optional(),
   zonesDescription: z.string().optional(),
+  // Vents
+  dryerVentLocation: z.string().optional(),
+  exhaustFanLocations: z.string().optional(),
 });
 
 const waterHeaterSchema = z.object({
@@ -121,6 +126,18 @@ const waterHeaterSchema = z.object({
   installDate: z.string().optional(),
   capacity: z.string().optional(),
   lastFlushService: z.string().optional(),
+  // Water softener / conditioner
+  hasWaterSoftener: z.boolean().optional(),
+  waterSoftenerType: z.string().optional(),
+  waterSoftenerLocation: z.string().optional(),
+  waterSoftenerSaltType: z.string().optional(),
+  waterSoftenerServiceSchedule: z.string().optional(),
+  // Radon
+  hasRadonSystem: z.boolean().optional(),
+  radonSystemType: z.string().optional(),
+  radonSystemLocation: z.string().optional(),
+  radonLastTestDate: z.string().optional(),
+  radonLastTestResult: z.string().optional(),
 });
 
 const applianceEntrySchema = z.object({

@@ -362,13 +362,23 @@ function SectionContent({
               <KVRow label="Phone" value={d.serviceCompany.phone} />
             </Card>
           )}
-          <KVRow label="Filter Sizes" value={d.filterSizes} />
+          <KVRow label="Furnace Filter" value={d.filterSizes} />
           <KVRow label="Change Frequency" value={d.filterChangeFrequency} />
+          <KVRow label="AC Return Filters" value={d.acReturnFilterSizes} />
+          <KVRow label="AC Return Locations" value={d.acReturnLocations} />
           <KVRow label="Thermostat Type" value={d.thermostatType} />
           {d.hasZones && d.zonesDescription && (
             <View>
               <SubHeader title="Zones" />
               <Text style={styles.paragraph}>{d.zonesDescription}</Text>
+            </View>
+          )}
+          {(d.dryerVentLocation || d.exhaustFanLocations) && (
+            <View>
+              <SubHeader title="Vents & Exhaust" />
+              {resetRowIndex() as undefined}
+              <KVRow label="Dryer Vent" value={d.dryerVentLocation} />
+              <KVRow label="Exhaust Fans" value={d.exhaustFanLocations} />
             </View>
           )}
         </View>
@@ -388,6 +398,22 @@ function SectionContent({
           <KVRow label="Install Date" value={d.installDate} />
           <KVRow label="Capacity" value={d.capacity} />
           <KVRow label="Last Flush / Service" value={d.lastFlushService} />
+          {d.hasWaterSoftener && (
+            <Card title="Water Softener / Conditioner">
+              <KVRow label="Type" value={d.waterSoftenerType} />
+              <KVRow label="Location" value={d.waterSoftenerLocation} />
+              <KVRow label="Salt Type" value={d.waterSoftenerSaltType} />
+              <KVRow label="Service" value={d.waterSoftenerServiceSchedule} />
+            </Card>
+          )}
+          {d.hasRadonSystem && (
+            <Card title="Radon System">
+              <KVRow label="Type" value={d.radonSystemType} />
+              <KVRow label="Location" value={d.radonSystemLocation} />
+              <KVRow label="Last Test" value={d.radonLastTestDate} />
+              <KVRow label="Result" value={d.radonLastTestResult} />
+            </Card>
+          )}
         </View>
       );
     }
