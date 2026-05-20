@@ -63,29 +63,20 @@ export function AddressAutocomplete({
         const data = await res.json();
 
         if (data.suggestions?.length) {
-          const detailed = await Promise.all(
-            data.suggestions.map(async (s: { mapbox_id: string }) => {
-              const retrieveParams = new URLSearchParams({
-                access_token: token,
-                session_token: sessionToken.current,
-              });
-              const r = await fetch(
-                `https://api.mapbox.com/search/searchbox/v1/retrieve/${s.mapbox_id}?${retrieveParams}`
-              );
-              const d = await r.json();
-              const props = d.features?.[0]?.properties;
-              if (!props) return null;
+          const parsed: AddressSuggestion[] = data.suggestions
+            .filter((s: Record<string, unknown>) => s.full_address)
+            .map((s: Record<string, unknown>) => {
+              const ctx = s.context as Record<string, Record<string, string>> | undefined;
               return {
-                id: s.mapbox_id,
-                full_address: props.full_address || "",
-                address_line1: props.name || "",
-                place: props.context?.place?.name || "",
-                region: props.context?.region?.region_code || "",
-                postcode: props.context?.postcode?.name || "",
-              } as AddressSuggestion;
-            })
-          );
-          setSuggestions(detailed.filter(Boolean) as AddressSuggestion[]);
+                id: s.mapbox_id as string,
+                full_address: s.full_address as string,
+                address_line1: s.name as string || "",
+                place: ctx?.place?.name || "",
+                region: ctx?.region?.region_code || "",
+                postcode: ctx?.postcode?.name || "",
+              };
+            });
+          setSuggestions(parsed);
           setOpen(true);
           setActiveIndex(-1);
         } else {
